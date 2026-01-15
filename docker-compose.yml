@@ -10,6 +10,7 @@
 
 services:
   carbone:
+    container_name: pacific-carbone
     # Use full image with LibreOffice + Google Fonts for professional PDFs
     # Image variants:
     #   - slim: No LibreOffice (API-only, no PDF conversion)
