@@ -23,12 +23,16 @@ services:
       # Set CARBONE_STUDIO_ENABLED=true in Dokploy env vars for template editing
       - CARBONE_EE_STUDIO=${CARBONE_STUDIO_ENABLED:-false}
 
+      # AUTHENTICATION: Required when Studio is enabled
+      # Protects Studio with HTTP Basic Auth
+      - CARBONE_EE_AUTHENTICATION=${CARBONE_STUDIO_ENABLED:-false}
+
+      # Studio credentials (format: username:password)
+      # Set via CARBONE_STUDIO_USER env var in Dokploy
+      - CARBONE_EE_STUDIOUSER=${CARBONE_STUDIO_USER:-admin:changeme}
+
       # Enterprise license (optional - enables advanced features)
       # - CARBONE_EE_LICENSE=${CARBONE_EE_LICENSE:-}
-
-      # Studio authentication (optional - adds basic auth to Studio)
-      # Format: username:password
-      # - CARBONE_EE_STUDIOUSER=${CARBONE_STUDIO_AUTH:-}
     volumes:
       # Template storage - Git-tracked, mounted read-only for security
       - ./templates:/app/template:ro
