@@ -35,8 +35,9 @@ services:
       # Enterprise license (optional - enables advanced features)
       # - CARBONE_EE_LICENSE=${CARBONE_EE_LICENSE:-}
     volumes:
-      # Template storage - Git-tracked, mounted read-only for security
-      - ./templates:/app/template:ro
+      # Template storage - Docker volume for proper permissions
+      # Templates are managed via Studio, backed up via Carbone's export feature
+      - carbone-templates:/app/template
       # Render output - ephemeral, auto-cleaned by Carbone
       - carbone-renders:/app/render
     restart: unless-stopped
@@ -79,5 +80,7 @@ networks:
     external: true
 
 volumes:
+  carbone-templates:
+    driver: local
   carbone-renders:
     driver: local
