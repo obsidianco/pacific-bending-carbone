@@ -1,0 +1,78 @@
+# Pacific Bending Carbone - Document Generation Service
+# Philosophy: KISS, DRY, YAGNI
+#
+# Domain: pb-templates.erp.observer
+# Access:
+#   - External: https://pb-templates.erp.observer (via Dokploy/Traefik)
+#   - Internal: http://<container-name>:4000 (via dokploy-network)
+#
+# SECURITY: Studio disabled by default. Enable only for template development.
+
+services:
+  carbone:
+    # Use full image with LibreOffice + Google Fonts for professional PDFs
+    # Image variants:
+    #   - slim: No LibreOffice (API-only, no PDF conversion)
+    #   - full: Includes LibreOffice
+    #   - full-fonts: LibreOffice + Google Fonts (recommended for production)
+    image: carbone/carbone-ee:full-5.1.1-fonts
+    ports:
+      - "4000:4000"
+    environment:
+      # STUDIO: Disabled by default for security
+      # Set CARBONE_STUDIO_ENABLED=true in Dokploy env vars for template editing
+      - CARBONE_EE_STUDIO=${CARBONE_STUDIO_ENABLED:-false}
+
+      # Enterprise license (optional - enables advanced features)
+      # - CARBONE_EE_LICENSE=${CARBONE_EE_LICENSE:-}
+
+      # Studio authentication (optional - adds basic auth to Studio)
+      # Format: username:password
+      # - CARBONE_EE_STUDIOUSER=${CARBONE_STUDIO_AUTH:-}
+    volumes:
+      # Template storage - Git-tracked, mounted read-only for security
+      - ./templates:/app/template:ro
+      # Render output - ephemeral, auto-cleaned by Carbone
+      - carbone-renders:/app/render
+    restart: unless-stopped
+    healthcheck:
+      # Use curl for health check (available in full image)
+      # /status endpoint returns JSON with version info
+      test: ["CMD", "curl", "-f", "http://localhost:4000/status"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    networks:
+      - carbone-network
+      - dokploy-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=dokploy-network"
+      # Logging identification
+      - "logging.service=carbone"
+      - "logging.environment=production"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+        labels: "logging.service,logging.environment"
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2G  # Full image with LibreOffice needs more memory
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+
+networks:
+  carbone-network:
+    driver: bridge
+  dokploy-network:
+    external: true
+
+volumes:
+  carbone-renders:
+    driver: local
