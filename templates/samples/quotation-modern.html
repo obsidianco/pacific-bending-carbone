@@ -34,28 +34,30 @@
       box-sizing: border-box;
     }
 
+    /* ============================================
+       Page Layout (US Letter: 8.5" × 11")
+       Content area: 7.3" × 10" after margins
+       ============================================ */
+    @page {
+      size: 8.5in 11in;
+      margin: 0.5in 0.6in;
+    }
+
     body {
       font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
       font-size: 10pt;
       line-height: 1.5;
       color: #1a1a2e;
       background: #ffffff;
+      width: 7.3in;
+      margin: 0 auto;
       padding: 0;
-      margin: 0;
-    }
-
-    /* ============================================
-       Page Layout (US Letter: 8.5" × 11")
-       ============================================ */
-    @page {
-      size: letter;
-      margin: 0.5in 0.6in;
     }
 
     .page {
-      width: 100%;
-      max-width: 7.3in;
-      margin: 0 auto;
+      width: 7.3in;
+      min-height: 10in;
+      margin: 0;
       padding: 0;
       background: #ffffff;
     }
