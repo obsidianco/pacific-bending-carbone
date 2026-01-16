@@ -24,6 +24,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Quotation {d.quote_number}</title>
+  <!-- Carbone PDF page configuration (US Letter with 0.5"/0.6" margins) -->
+  <carbone-pdf-options
+    paper-size="Letter"
+    margin-top="0.5"
+    margin-bottom="0.5"
+    margin-left="0.6"
+    margin-right="0.6"
+  />
   <style>
     /* ============================================
        CSS Reset & Base Styles
@@ -35,28 +43,23 @@
     }
 
     /* ============================================
-       Page Layout (US Letter: 8.5" × 11")
-       Content area: 7.3" × 10" after margins
+       Page Layout
+       Page size and margins controlled by <carbone-pdf-options/>
+       element above. Content flows to 100% width.
        ============================================ */
-    @page {
-      size: 8.5in 11in;
-      margin: 0.5in 0.6in;
-    }
-
     body {
       font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
       font-size: 10pt;
       line-height: 1.5;
       color: #1a1a2e;
       background: #ffffff;
-      width: 7.3in;
-      margin: 0 auto;
+      width: 100%;
+      margin: 0;
       padding: 0;
     }
 
     .page {
-      width: 7.3in;
-      min-height: 10in;
+      width: 100%;
       margin: 0;
       padding: 0;
       background: #ffffff;
