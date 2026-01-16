@@ -614,7 +614,7 @@
             <td class="text-center">{d.items[i].row_num}</td>
             <td>
               <div class="item-code">{d.items[i].item_code}</div>
-              {d.items[i].item_name:ifNE(d.items[i].item_code):showBegin}
+              {d.items[i].item_name:ifNE(''):showBegin}
               <div class="item-description">{d.items[i].item_name}</div>
               {d.items[i].item_name:showEnd}
             </td>
