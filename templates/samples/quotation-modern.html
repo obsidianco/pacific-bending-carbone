@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<!--
+  Pacific Bending Quotation Template (Modern HTML)
+
+  Carbone.io HTML Template for PDF generation.
+  Uses all available variables from QuotationMapper.
+
+  Usage:
+    - Upload to Carbone service or use via API
+    - Renders to PDF with professional styling
+
+  Variables Reference:
+    Header: quote_number, customer_name, transaction_date, valid_till, etc.
+    Items: items[i].item_code, items[i].description, items[i].qty, etc.
+    Computed: grand_total, subtotal, tax_total, item_count, etc.
+    Company: company.name, company.address, company.phone, etc.
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quotation {d.quote_number}</title>
+  <style>
+    /* ============================================
+       CSS Reset & Base Styles
+       ============================================ */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+      font-size: 10pt;
+      line-height: 1.5;
+      color: #1a1a2e;
+      background: #ffffff;
+      padding: 0;
+      margin: 0;
+    }
+
+    /* ============================================
+       Page Layout
+       ============================================ */
+    .page {
+      max-width: 210mm;
+      margin: 0 auto;
+      padding: 15mm 20mm;
+      background: #ffffff;
+    }
+
+    /* ============================================
+       Header Section
+       ============================================ */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 25px;
+      padding-bottom: 20px;
+      border-bottom: 3px solid #2c3e50;
+    }
+
+    .company-info {
+      flex: 1;
+    }
+
+    .company-name {
+      font-size: 22pt;
+      font-weight: 700;
+      color: #2c3e50;
+      margin-bottom: 8px;
+      letter-spacing: -0.5px;
+    }
+
+    .company-details {
+      font-size: 9pt;
+      color: #5d6d7e;
+      line-height: 1.6;
+    }
+
+    .company-details p {
+      margin: 2px 0;
+    }
+
+    .document-info {
+      text-align: right;
+      min-width: 180px;
+    }
+
+    .document-title {
+      font-size: 28pt;
+      font-weight: 300;
+      color: #2c3e50;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      margin-bottom: 15px;
+    }
+
+    .document-number {
+      font-size: 14pt;
+      font-weight: 600;
+      color: #e74c3c;
+      margin-bottom: 10px;
+    }
+
+    .document-dates {
+      font-size: 9pt;
+      color: #7f8c8d;
+    }
+
+    .document-dates p {
+      margin: 3px 0;
+    }
+
+    .document-dates strong {
+      color: #2c3e50;
+    }
+
+    /* Draft Watermark */
+    .watermark {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) rotate(-45deg);
+      font-size: 120pt;
+      font-weight: bold;
+      color: rgba(231, 76, 60, 0.08);
+      text-transform: uppercase;
+      pointer-events: none;
+      z-index: -1;
+      letter-spacing: 20px;
+    }
+
+    /* ============================================
+       Customer Section
+       ============================================ */
+    .parties {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 30px;
+      gap: 40px;
+    }
+
+    .party-box {
+      flex: 1;
+      padding: 15px 20px;
+      background: #f8f9fa;
+      border-radius: 6px;
+      border-left: 4px solid #3498db;
+    }
+
+    .party-box.prepared-by {
+      border-left-color: #27ae60;
+      max-width: 250px;
+    }
+
+    .party-label {
+      font-size: 8pt;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: #7f8c8d;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    .party-name {
+      font-size: 12pt;
+      font-weight: 600;
+      color: #2c3e50;
+      margin-bottom: 5px;
+    }
+
+    .party-details {
+      font-size: 9pt;
+      color: #5d6d7e;
+      white-space: pre-line;
+      line-height: 1.5;
+    }
+
+    .party-contact {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid #e0e0e0;
+      font-size: 9pt;
+    }
+
+    .party-contact p {
+      margin: 2px 0;
+      color: #5d6d7e;
+    }
+
+    .party-contact strong {
+      color: #2c3e50;
+    }
+
+    /* ============================================
+       Project Info Bar
+       ============================================ */
+    .project-info {
+      display: flex;
+      justify-content: space-between;
+      background: #2c3e50;
+      color: #ffffff;
+      padding: 12px 20px;
+      border-radius: 6px;
+      margin-bottom: 25px;
+      font-size: 9pt;
+    }
+
+    .project-info-item {
+      text-align: center;
+    }
+
+    .project-info-label {
+      font-size: 7pt;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      opacity: 0.7;
+      margin-bottom: 3px;
+    }
+
+    .project-info-value {
+      font-weight: 600;
+      font-size: 10pt;
+    }
+
+    /* ============================================
+       Line Items Table
+       ============================================ */
+    .items-section {
+      margin-bottom: 25px;
+    }
+
+    .section-title {
+      font-size: 11pt;
+      font-weight: 600;
+      color: #2c3e50;
+      margin-bottom: 12px;
+      padding-bottom: 5px;
+      border-bottom: 2px solid #ecf0f1;
+    }
+
+    .items-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 9pt;
+    }
+
+    .items-table thead {
+      background: #34495e;
+      color: #ffffff;
+    }
+
+    .items-table th {
+      padding: 10px 12px;
+      text-align: left;
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 8pt;
+      letter-spacing: 0.5px;
+    }
+
+    .items-table th.text-right,
+    .items-table td.text-right {
+      text-align: right;
+    }
+
+    .items-table th.text-center,
+    .items-table td.text-center {
+      text-align: center;
+    }
+
+    .items-table tbody tr {
+      border-bottom: 1px solid #ecf0f1;
+    }
+
+    .items-table tbody tr:nth-child(even) {
+      background: #f8f9fa;
+    }
+
+    .items-table tbody tr:hover {
+      background: #eef2f7;
+    }
+
+    .items-table td {
+      padding: 10px 12px;
+      vertical-align: top;
+    }
+
+    .item-code {
+      font-weight: 600;
+      color: #2c3e50;
+    }
+
+    .item-description {
+      color: #5d6d7e;
+      font-size: 8.5pt;
+      margin-top: 3px;
+    }
+
+    .item-notes {
+      color: #7f8c8d;
+      font-size: 8pt;
+      font-style: italic;
+      margin-top: 5px;
+      padding-top: 5px;
+      border-top: 1px dashed #e0e0e0;
+    }
+
+    .item-lead-time {
+      display: inline-block;
+      background: #fff3cd;
+      color: #856404;
+      font-size: 7.5pt;
+      padding: 2px 6px;
+      border-radius: 3px;
+      margin-top: 4px;
+    }
+
+    .item-dimensions {
+      font-size: 8pt;
+      color: #7f8c8d;
+      margin-top: 3px;
+    }
+
+    /* ============================================
+       Totals Section
+       ============================================ */
+    .totals-section {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 30px;
+    }
+
+    .totals-box {
+      width: 280px;
+      background: #f8f9fa;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .totals-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 15px;
+      border-bottom: 1px solid #e0e0e0;
+      font-size: 9.5pt;
+    }
+
+    .totals-row:last-child {
+      border-bottom: none;
+    }
+
+    .totals-row.discount {
+      color: #27ae60;
+    }
+
+    .totals-row.freight {
+      color: #8e44ad;
+    }
+
+    .totals-row.grand-total {
+      background: #2c3e50;
+      color: #ffffff;
+      font-size: 12pt;
+      font-weight: 600;
+      padding: 12px 15px;
+    }
+
+    .totals-label {
+      color: #5d6d7e;
+    }
+
+    .totals-row.grand-total .totals-label {
+      color: rgba(255,255,255,0.8);
+    }
+
+    .totals-value {
+      font-weight: 600;
+      color: #2c3e50;
+    }
+
+    .totals-row.grand-total .totals-value {
+      color: #ffffff;
+    }
+
+    /* ============================================
+       Terms & Notes Section
+       ============================================ */
+    .terms-section {
+      margin-bottom: 25px;
+      page-break-inside: avoid;
+    }
+
+    .terms-content {
+      background: #fafafa;
+      padding: 15px 20px;
+      border-radius: 6px;
+      border: 1px solid #e0e0e0;
+      font-size: 9pt;
+      color: #5d6d7e;
+      white-space: pre-line;
+      line-height: 1.6;
+    }
+
+    /* ============================================
+       Footer Section
+       ============================================ */
+    .footer {
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 2px solid #ecf0f1;
+      text-align: center;
+      font-size: 8pt;
+      color: #95a5a6;
+    }
+
+    .footer p {
+      margin: 3px 0;
+    }
+
+    .validity-notice {
+      background: #fff3cd;
+      color: #856404;
+      padding: 10px 15px;
+      border-radius: 6px;
+      text-align: center;
+      font-size: 9pt;
+      margin-bottom: 20px;
+    }
+
+    .signature-section {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 50px;
+      gap: 60px;
+    }
+
+    .signature-box {
+      flex: 1;
+      text-align: center;
+    }
+
+    .signature-line {
+      border-bottom: 1px solid #2c3e50;
+      height: 50px;
+      margin-bottom: 8px;
+    }
+
+    .signature-label {
+      font-size: 8pt;
+      color: #7f8c8d;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* ============================================
+       Print Styles
+       ============================================ */
+    @media print {
+      body {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      .page {
+        padding: 10mm 15mm;
+      }
+
+      .items-table thead {
+        background: #34495e !important;
+        -webkit-print-color-adjust: exact;
+      }
+    }
+
+    /* ============================================
+       Utility Classes
+       ============================================ */
+    .text-muted {
+      color: #7f8c8d;
+    }
+
+    .text-success {
+      color: #27ae60;
+    }
+
+    .text-danger {
+      color: #e74c3c;
+    }
+
+    .font-mono {
+      font-family: 'SF Mono', 'Consolas', 'Monaco', monospace;
+    }
+
+    .mt-10 { margin-top: 10px; }
+    .mb-10 { margin-bottom: 10px; }
+  </style>
+</head>
+<body>
+  <!-- Draft Watermark (only shows if status is Draft) -->
+  {d.watermark:ifNE(''):showBegin}<div class="watermark">{d.watermark}</div>{d.watermark:showEnd}
+
+  <div class="page">
+    <!-- ============================================
+         HEADER: Company Info & Document Info
+         ============================================ -->
+    <div class="header">
+      <div class="company-info">
+        <div class="company-name">{d.company.name}</div>
+        <div class="company-details">
+          <p>{d.company.address}</p>
+          {d.company.phone:ifNE(''):showBegin}<p>Tel: {d.company.phone}</p>{d.company.phone:showEnd}
+          {d.company.fax:ifNE(''):showBegin}<p>Fax: {d.company.fax}</p>{d.company.fax:showEnd}
+          {d.company.email:ifNE(''):showBegin}<p>Email: {d.company.email}</p>{d.company.email:showEnd}
+          {d.company.website:ifNE(''):showBegin}<p>Web: {d.company.website}</p>{d.company.website:showEnd}
+          {d.company.tax_id:ifNE(''):showBegin}<p>Tax ID: {d.company.tax_id}</p>{d.company.tax_id:showEnd}
+        </div>
+      </div>
+      <div class="document-info">
+        <div class="document-title">Quotation</div>
+        <div class="document-number">{d.quote_number}</div>
+        <div class="document-dates">
+          <p><strong>Date:</strong> {d.transaction_date}</p>
+          <p><strong>Valid Until:</strong> {d.valid_till}</p>
+          <p><strong>Status:</strong> {d.status}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================
+         CUSTOMER & CONTACT INFO
+         ============================================ -->
+    <div class="parties">
+      <div class="party-box">
+        <div class="party-label">Bill To</div>
+        <div class="party-name">{d.customer_name}</div>
+        <div class="party-details">{d.customer_address}</div>
+        {d.customer_email:ifNE(''):showBegin}
+        <div class="party-contact">
+          <p><strong>Email:</strong> {d.customer_email}</p>
+          {d.customer_phone:ifNE(''):showBegin}<p><strong>Phone:</strong> {d.customer_phone}</p>{d.customer_phone:showEnd}
+        </div>
+        {d.customer_email:showEnd}
+
+        <!-- Contact Person (if specified) -->
+        {d.has_contact:ifEQ(true):showBegin}
+        <div class="party-contact">
+          <p><strong>Attention:</strong> {d.contact_name}</p>
+          {d.contact_designation:ifNE(''):showBegin}<p><strong>Title:</strong> {d.contact_designation}</p>{d.contact_designation:showEnd}
+          {d.contact_email:ifNE(''):showBegin}<p><strong>Email:</strong> {d.contact_email}</p>{d.contact_email:showEnd}
+          {d.contact_phone:ifNE(''):showBegin}<p><strong>Phone:</strong> {d.contact_phone}</p>{d.contact_phone:showEnd}
+        </div>
+        {d.has_contact:showEnd}
+      </div>
+
+      <div class="party-box prepared-by">
+        <div class="party-label">Prepared By</div>
+        <div class="party-name">{d.prepared_by}</div>
+        <div class="party-details">
+          <p>{d.company.name}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================
+         PROJECT INFO BAR
+         ============================================ -->
+    <div class="project-info">
+      <div class="project-info-item">
+        <div class="project-info-label">Currency</div>
+        <div class="project-info-value">{d.currency}</div>
+      </div>
+      <div class="project-info-item">
+        <div class="project-info-label">Items</div>
+        <div class="project-info-value">{d.item_count}</div>
+      </div>
+      <div class="project-info-item">
+        <div class="project-info-label">Total Qty</div>
+        <div class="project-info-value">{d.total_qty:formatN(2)}</div>
+      </div>
+      {d.lead_time_weeks:ifGT(0):showBegin}
+      <div class="project-info-item">
+        <div class="project-info-label">Est. Lead Time</div>
+        <div class="project-info-value">{d.lead_time_weeks} weeks</div>
+      </div>
+      {d.lead_time_weeks:showEnd}
+      <div class="project-info-item">
+        <div class="project-info-label">Valid For</div>
+        <div class="project-info-value">{d.days_valid} days</div>
+      </div>
+    </div>
+
+    <!-- ============================================
+         LINE ITEMS TABLE
+         ============================================ -->
+    <div class="items-section">
+      <div class="section-title">Quotation Items</div>
+      <table class="items-table">
+        <thead>
+          <tr>
+            <th style="width: 40px;">#</th>
+            <th style="width: 25%;">Item</th>
+            <th>Description</th>
+            <th class="text-center" style="width: 60px;">Qty</th>
+            <th class="text-center" style="width: 50px;">UOM</th>
+            <th class="text-right" style="width: 90px;">Rate</th>
+            <th class="text-right" style="width: 100px;">Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="text-center">{d.items[i].row_num}</td>
+            <td>
+              <div class="item-code">{d.items[i].item_code}</div>
+              {d.items[i].item_name:ifNE(d.items[i].item_code):showBegin}
+              <div class="item-description">{d.items[i].item_name}</div>
+              {d.items[i].item_name:showEnd}
+            </td>
+            <td>
+              <div>{d.items[i].description}</div>
+              <!-- Dimensions (if any) -->
+              {d.items[i].dimension_1:ifGT(0):showBegin}
+              <div class="item-dimensions">
+                Dim: {d.items[i].dimension_1:formatN(2)} x {d.items[i].dimension_2:formatN(2)}
+                {d.items[i].wall_thickness:ifGT(0):show('| Wall: ')}{d.items[i].wall_thickness:ifGT(0):formatN(2)}
+              </div>
+              {d.items[i].dimension_1:showEnd}
+              <!-- Notes (if any) -->
+              {d.items[i].has_notes:ifEQ(true):showBegin}
+              <div class="item-notes">{d.items[i].notes}</div>
+              {d.items[i].has_notes:showEnd}
+              <!-- Lead time (if any) -->
+              {d.items[i].has_lead_time:ifEQ(true):showBegin}
+              <div class="item-lead-time">Lead time: {d.items[i].lead_time} {d.items[i].lead_time_unit}</div>
+              {d.items[i].has_lead_time:showEnd}
+            </td>
+            <td class="text-center">{d.items[i].qty_formatted}</td>
+            <td class="text-center">{d.items[i].uom}</td>
+            <td class="text-right">{d.items[i].rate_formatted}</td>
+            <td class="text-right"><strong>{d.items[i].amount_formatted}</strong></td>
+          </tr>
+          {d.items[i+1]}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ============================================
+         TOTALS SECTION
+         ============================================ -->
+    <div class="totals-section">
+      <div class="totals-box">
+        <div class="totals-row">
+          <span class="totals-label">Subtotal</span>
+          <span class="totals-value">{d.subtotal_formatted}</span>
+        </div>
+
+        <!-- Freight (conditional) -->
+        {d.has_freight:ifEQ(true):showBegin}
+        <div class="totals-row freight">
+          <span class="totals-label">Freight</span>
+          <span class="totals-value">+ {d.freight_total_formatted}</span>
+        </div>
+        {d.has_freight:showEnd}
+
+        <!-- Discount (conditional) -->
+        {d.has_discount:ifEQ(true):showBegin}
+        <div class="totals-row discount">
+          <span class="totals-label">Discount</span>
+          <span class="totals-value">- {d.discount_formatted}</span>
+        </div>
+        {d.has_discount:showEnd}
+
+        <!-- Tax (conditional) -->
+        {d.has_tax:ifEQ(true):showBegin}
+        <div class="totals-row">
+          <span class="totals-label">Tax</span>
+          <span class="totals-value">{d.tax_total_formatted}</span>
+        </div>
+        {d.has_tax:showEnd}
+
+        <div class="totals-row grand-total">
+          <span class="totals-label">Grand Total ({d.currency})</span>
+          <span class="totals-value">{d.grand_total_formatted}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================
+         VALIDITY NOTICE
+         ============================================ -->
+    <div class="validity-notice">
+      This quotation is valid until <strong>{d.valid_till}</strong> ({d.days_valid} days from issue date).
+      Prices and availability are subject to change after this date.
+    </div>
+
+    <!-- ============================================
+         TERMS & CONDITIONS (conditional)
+         ============================================ -->
+    {d.terms:ifNE(''):showBegin}
+    <div class="terms-section">
+      <div class="section-title">Terms & Conditions</div>
+      <div class="terms-content">{d.terms}</div>
+    </div>
+    {d.terms:showEnd}
+
+    <!-- ============================================
+         PAYMENT TERMS (conditional)
+         ============================================ -->
+    {d.payment_terms:ifNE(''):showBegin}
+    <div class="terms-section">
+      <div class="section-title">Payment Terms</div>
+      <div class="terms-content">{d.payment_terms}</div>
+    </div>
+    {d.payment_terms:showEnd}
+
+    <!-- ============================================
+         SIGNATURE SECTION
+         ============================================ -->
+    <div class="signature-section">
+      <div class="signature-box">
+        <div class="signature-line"></div>
+        <div class="signature-label">Customer Acceptance</div>
+      </div>
+      <div class="signature-box">
+        <div class="signature-line"></div>
+        <div class="signature-label">Date</div>
+      </div>
+    </div>
+
+    <!-- ============================================
+         FOOTER
+         ============================================ -->
+    <div class="footer">
+      <p><strong>{d.company.name}</strong></p>
+      <p>{d.company.address}</p>
+      {d.company.phone:ifNE(''):showBegin}<p>Tel: {d.company.phone} | Email: {d.company.email}</p>{d.company.phone:showEnd}
+      <p class="mt-10">Thank you for the opportunity to quote. We look forward to working with you.</p>
+    </div>
+  </div>
+</body>
+</html>
