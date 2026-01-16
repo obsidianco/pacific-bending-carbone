@@ -3,7 +3,7 @@
   Pacific Bending Quotation Template (Modern HTML)
 
   Carbone.io HTML Template for PDF generation.
-  Uses all available variables from QuotationMapper.
+  Uses TABLE-BASED LAYOUTS for LibreOffice compatibility.
 
   Usage:
     - Upload to Carbone service or use via API
@@ -14,6 +14,10 @@
     Items: items[i].item_code, items[i].description, items[i].qty, etc.
     Computed: grand_total, subtotal, tax_total, item_count, etc.
     Company: company.name, company.address, company.phone, etc.
+
+  NOTE: This template uses tables instead of CSS Grid/Flexbox because
+  Carbone uses LibreOffice for HTML-to-PDF conversion, which has
+  limited support for modern CSS layout features.
 -->
 <html lang="en">
 <head>
@@ -45,46 +49,46 @@
        ============================================ */
     @page {
       size: letter;
-      margin: 0;
+      margin: 0.5in 0.6in;
     }
 
     .page {
-      width: 8.5in;
-      min-height: 11in;
+      width: 100%;
+      max-width: 7.3in;
       margin: 0 auto;
-      padding: 0.5in 0.6in;
+      padding: 0;
       background: #ffffff;
-      position: relative;
-      overflow: hidden;
     }
 
-    /* Ensure proper stacking context for page elements */
-    .page > * {
-      position: relative;
+    /* ============================================
+       Layout Tables (no borders)
+       ============================================ */
+    .layout-table {
+      width: 100%;
+      border-collapse: collapse;
+      border: none;
+    }
+
+    .layout-table td {
+      vertical-align: top;
+      border: none;
+      padding: 0;
     }
 
     /* ============================================
        Header Section
        ============================================ */
     .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
       margin-bottom: 10px;
       padding-bottom: 10px;
       border-bottom: 3px solid #2c3e50;
     }
 
-    .company-info {
-      flex: 1;
-    }
-
     .company-name {
       font-size: 18pt;
-      font-weight: 700;
+      font-weight: bold;
       color: #2c3e50;
       margin-bottom: 6px;
-      letter-spacing: -0.5px;
     }
 
     .company-details {
@@ -93,13 +97,8 @@
       line-height: 1.5;
     }
 
-    .company-details p {
-      margin: 1px 0;
-    }
-
     .document-info {
       text-align: right;
-      min-width: 180px;
     }
 
     .document-title {
@@ -113,41 +112,40 @@
 
     .document-number {
       font-size: 13pt;
-      font-weight: 600;
+      font-weight: bold;
       color: #e74c3c;
       margin-bottom: 6px;
     }
 
-    /* Status Badge - Inline pill next to quote number */
+    /* Status Badge */
     .status-badge {
       display: inline-block;
       font-size: 8pt;
-      font-weight: 600;
+      font-weight: bold;
       padding: 2px 8px;
-      border-radius: 10px;
       margin-left: 8px;
-      vertical-align: middle;
       text-transform: uppercase;
       letter-spacing: 0.5px;
+      border-radius: 10px;
     }
 
     .status-badge.draft {
-      background: #f39c12;
+      background-color: #f39c12;
       color: #ffffff;
     }
 
     .status-badge.submitted {
-      background: #3498db;
+      background-color: #3498db;
       color: #ffffff;
     }
 
     .status-badge.ordered {
-      background: #27ae60;
+      background-color: #27ae60;
       color: #ffffff;
     }
 
     .status-badge.cancelled {
-      background: #95a5a6;
+      background-color: #95a5a6;
       color: #ffffff;
     }
 
@@ -156,28 +154,27 @@
       color: #7f8c8d;
     }
 
-    .document-dates p {
-      margin: 2px 0;
-    }
-
-    .document-dates strong {
-      color: #2c3e50;
-    }
-
     /* ============================================
-       Customer Section - 3-Column Grid
+       Info Cards (3-column layout)
        ============================================ */
-    .info-grid {
-      display: grid;
-      grid-template-columns: 2fr 1fr 1fr;
-      gap: 12px;
+    .info-section {
       margin-bottom: 12px;
     }
 
+    .info-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 8px 0;
+    }
+
+    .info-table td {
+      vertical-align: top;
+      padding: 0;
+    }
+
     .info-card {
-      background: #f8f9fa;
+      background-color: #f8f9fa;
       padding: 10px 12px;
-      border-radius: 4px;
       border-left: 3px solid #3498db;
     }
 
@@ -195,12 +192,12 @@
       letter-spacing: 1.2px;
       color: #7f8c8d;
       margin-bottom: 6px;
-      font-weight: 600;
+      font-weight: bold;
     }
 
     .info-name {
       font-size: 11pt;
-      font-weight: 600;
+      font-weight: bold;
       color: #2c3e50;
       margin-bottom: 4px;
     }
@@ -208,7 +205,6 @@
     .info-details {
       font-size: 8.5pt;
       color: #5d6d7e;
-      white-space: pre-line;
       line-height: 1.4;
     }
 
@@ -217,32 +213,30 @@
       padding-top: 8px;
       border-top: 1px solid #e0e0e0;
       font-size: 8.5pt;
-    }
-
-    .info-contact p {
-      margin: 2px 0;
       color: #5d6d7e;
     }
 
-    .info-contact strong {
-      color: #2c3e50;
-    }
-
-    /* Details card styling */
-    .details-row {
-      display: flex;
-      justify-content: space-between;
+    /* Details table inside info card */
+    .details-table {
+      width: 100%;
       font-size: 8.5pt;
-      margin: 3px 0;
+      border-collapse: collapse;
     }
 
-    .details-row .label {
+    .details-table td {
+      padding: 2px 0;
+      border: none;
+    }
+
+    .details-table .label {
       color: #7f8c8d;
+      text-align: left;
     }
 
-    .details-row .value {
-      font-weight: 600;
+    .details-table .value {
+      font-weight: bold;
       color: #2c3e50;
+      text-align: right;
     }
 
     /* ============================================
@@ -250,12 +244,11 @@
        ============================================ */
     .items-section {
       margin-bottom: 12px;
-      page-break-inside: avoid;
     }
 
     .section-title {
       font-size: 10pt;
-      font-weight: 600;
+      font-weight: bold;
       color: #2c3e50;
       margin-bottom: 6px;
       padding-bottom: 3px;
@@ -268,27 +261,25 @@
       font-size: 8.5pt;
     }
 
-    .items-table thead {
-      background: #34495e;
+    .items-table thead tr {
+      background-color: #34495e;
       color: #ffffff;
     }
 
     .items-table th {
       padding: 6px 8px;
       text-align: left;
-      font-weight: 600;
+      font-weight: bold;
       text-transform: uppercase;
       font-size: 7.5pt;
       letter-spacing: 0.5px;
     }
 
-    .items-table th.text-right,
-    .items-table td.text-right {
+    .items-table th.text-right {
       text-align: right;
     }
 
-    .items-table th.text-center,
-    .items-table td.text-center {
+    .items-table th.text-center {
       text-align: center;
     }
 
@@ -296,21 +287,21 @@
       border-bottom: 1px solid #f0f0f0;
     }
 
-    .items-table tbody tr:nth-child(even) {
-      background: #fafafa;
-    }
-
-    .items-table tbody tr:hover {
-      background: #f5f7fa;
-    }
-
     .items-table td {
       padding: 6px 8px;
       vertical-align: top;
     }
 
+    .items-table td.text-right {
+      text-align: right;
+    }
+
+    .items-table td.text-center {
+      text-align: center;
+    }
+
     .item-code {
-      font-weight: 600;
+      font-weight: bold;
       color: #2c3e50;
       font-size: 8.5pt;
     }
@@ -332,11 +323,10 @@
 
     .item-lead-time {
       display: inline-block;
-      background: #fff3cd;
+      background-color: #fff3cd;
       color: #856404;
       font-size: 7pt;
       padding: 2px 5px;
-      border-radius: 3px;
       margin-top: 3px;
     }
 
@@ -347,24 +337,27 @@
     }
 
     /* ============================================
-       Totals Section - Combined with Validity
+       Totals Section with Validity
        ============================================ */
-    .totals-validity-section {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
+    .totals-section {
       margin-bottom: 14px;
-      page-break-inside: avoid;
-      gap: 20px;
+    }
+
+    .totals-outer-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .totals-outer-table > tbody > tr > td {
+      vertical-align: top;
+      padding: 0;
     }
 
     .validity-notice {
-      flex: 1;
-      background: #fff8e1;
+      background-color: #fff8e1;
       border: 1px solid #ffe082;
       border-left: 3px solid #f39c12;
       padding: 10px 12px;
-      border-radius: 4px;
       font-size: 8.5pt;
       color: #7f6003;
       line-height: 1.5;
@@ -374,61 +367,58 @@
       color: #5d4507;
     }
 
-    .validity-icon {
-      font-size: 10pt;
-      margin-right: 4px;
-    }
-
     .totals-box {
       width: 240px;
-      background: #f8f9fa;
-      border-radius: 4px;
-      overflow: hidden;
-      flex-shrink: 0;
+      background-color: #f8f9fa;
     }
 
-    .totals-row {
-      display: flex;
-      justify-content: space-between;
-      padding: 6px 10px;
-      border-bottom: 1px solid #e8e8e8;
+    .totals-table {
+      width: 100%;
+      border-collapse: collapse;
       font-size: 9pt;
     }
 
-    .totals-row:last-child {
+    .totals-table td {
+      padding: 6px 10px;
+      border-bottom: 1px solid #e8e8e8;
+    }
+
+    .totals-table tr:last-child td {
       border-bottom: none;
     }
 
-    .totals-row.discount {
+    .totals-table .totals-label {
+      color: #5d6d7e;
+      text-align: left;
+    }
+
+    .totals-table .totals-value {
+      font-weight: bold;
+      color: #2c3e50;
+      text-align: right;
+    }
+
+    .totals-table tr.discount td {
       color: #27ae60;
     }
 
-    .totals-row.freight {
+    .totals-table tr.freight td {
       color: #8e44ad;
     }
 
-    .totals-row.grand-total {
-      background: #2c3e50;
+    .totals-table tr.grand-total td {
+      background-color: #2c3e50;
       color: #ffffff;
       font-size: 11pt;
-      font-weight: 600;
+      font-weight: bold;
       padding: 8px 10px;
     }
 
-    .totals-label {
-      color: #5d6d7e;
-    }
-
-    .totals-row.grand-total .totals-label {
+    .totals-table tr.grand-total .totals-label {
       color: rgba(255,255,255,0.8);
     }
 
-    .totals-value {
-      font-weight: 600;
-      color: #2c3e50;
-    }
-
-    .totals-row.grand-total .totals-value {
+    .totals-table tr.grand-total .totals-value {
       color: #ffffff;
     }
 
@@ -437,59 +427,35 @@
        ============================================ */
     .terms-section {
       margin-bottom: 12px;
-      page-break-inside: avoid;
     }
 
     .terms-content {
-      background: #fafafa;
+      background-color: #fafafa;
       padding: 12px 14px;
-      border-radius: 4px;
       border: 1px solid #e0e0e0;
       font-size: 9.5pt;
       color: #4a5568;
-      white-space: pre-line;
       line-height: 1.6;
     }
 
     /* ============================================
-       Footer Section - Compact Single Line
-       ============================================ */
-    .footer {
-      margin-top: 16px;
-      padding-top: 10px;
-      border-top: 1px solid #e0e0e0;
-      text-align: center;
-      font-size: 8pt;
-      color: #95a5a6;
-    }
-
-    .footer-contact {
-      margin-bottom: 4px;
-    }
-
-    .footer-contact span {
-      margin: 0 6px;
-    }
-
-    .footer-tagline {
-      font-style: italic;
-      color: #a0aec0;
-    }
-
-    /* ============================================
-       Signature Section - Compact
+       Signature Section
        ============================================ */
     .signature-section {
-      display: flex;
-      justify-content: space-between;
       margin-top: 20px;
-      gap: 30px;
-      page-break-inside: avoid;
+      margin-bottom: 16px;
     }
 
-    .signature-box {
-      flex: 1;
+    .signature-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 30px 0;
+    }
+
+    .signature-table td {
+      width: 50%;
       text-align: center;
+      padding: 0;
     }
 
     .signature-line {
@@ -506,52 +472,21 @@
     }
 
     /* ============================================
-       Print Styles
+       Footer Section
        ============================================ */
-    @media print {
-      body {
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-      }
+    .footer {
+      margin-top: 16px;
+      padding-top: 10px;
+      border-top: 1px solid #e0e0e0;
+      text-align: center;
+      font-size: 8pt;
+      color: #95a5a6;
+    }
 
-      .page {
-        width: 100%;
-        min-height: auto;
-        padding: 0;
-      }
-
-      .items-table thead {
-        background: #34495e !important;
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-      }
-
-      .totals-row.grand-total {
-        background: #2c3e50 !important;
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-      }
-
-      .validity-notice {
-        background: #fff8e1 !important;
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-      }
-
-      .status-badge {
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-      }
-
-      .status-badge.draft {
-        background: #f39c12 !important;
-      }
-
-      .info-card {
-        background: #f8f9fa !important;
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-      }
+    .footer-tagline {
+      font-style: italic;
+      color: #a0aec0;
+      margin-top: 4px;
     }
 
     /* ============================================
@@ -561,20 +496,9 @@
       color: #7f8c8d;
     }
 
-    .text-success {
-      color: #27ae60;
+    .text-bold {
+      font-weight: bold;
     }
-
-    .text-danger {
-      color: #e74c3c;
-    }
-
-    .font-mono {
-      font-family: 'SF Mono', 'Consolas', 'Monaco', monospace;
-    }
-
-    .mt-10 { margin-top: 10px; }
-    .mb-10 { margin-bottom: 10px; }
   </style>
 </head>
 <body>
@@ -583,90 +507,103 @@
          HEADER: Company Info & Document Info
          ============================================ -->
     <div class="header">
-      <div class="company-info">
-        <div class="company-name">{d.company.name}</div>
-        <div class="company-details">
-          <p>{d.company.address}</p>
-          {d.company.phone:ifNE(''):showBegin}<p>Tel: {d.company.phone}{d.company.email:ifNE(''):show(' | Email: ')}{d.company.email}</p>{d.company.phone:showEnd}
-          {d.company.website:ifNE(''):showBegin}<p>Web: {d.company.website}</p>{d.company.website:showEnd}
-        </div>
-      </div>
-      <div class="document-info">
-        <div class="document-title">Quotation</div>
-        <div class="document-number">
-          {d.quote_number}
-          {d.status:ifEQ('Draft'):showBegin}<span class="status-badge draft">Draft</span>{d.status:showEnd}
-          {d.status:ifEQ('Submitted'):showBegin}<span class="status-badge submitted">Submitted</span>{d.status:showEnd}
-          {d.status:ifEQ('Ordered'):showBegin}<span class="status-badge ordered">Ordered</span>{d.status:showEnd}
-          {d.status:ifEQ('Cancelled'):showBegin}<span class="status-badge cancelled">Cancelled</span>{d.status:showEnd}
-        </div>
-        <div class="document-dates">
-          <p><strong>Date:</strong> {d.transaction_date}</p>
-        </div>
-      </div>
+      <table class="layout-table">
+        <tr>
+          <td style="width: 60%;">
+            <div class="company-name">{d.company.name}</div>
+            <div class="company-details">
+              {d.company.address}<br>
+              {d.company.phone:ifNE(''):showBegin}Tel: {d.company.phone}{d.company.email:ifNE(''):show(' | Email: ')}{d.company.email}<br>{d.company.phone:showEnd}
+              {d.company.website:ifNE(''):showBegin}Web: {d.company.website}{d.company.website:showEnd}
+            </div>
+          </td>
+          <td class="document-info">
+            <div class="document-title">Quotation</div>
+            <div class="document-number">
+              {d.quote_number}
+              {d.status:ifEQ('Draft'):showBegin}<span class="status-badge draft">Draft</span>{d.status:showEnd}
+              {d.status:ifEQ('Submitted'):showBegin}<span class="status-badge submitted">Submitted</span>{d.status:showEnd}
+              {d.status:ifEQ('Ordered'):showBegin}<span class="status-badge ordered">Ordered</span>{d.status:showEnd}
+              {d.status:ifEQ('Cancelled'):showBegin}<span class="status-badge cancelled">Cancelled</span>{d.status:showEnd}
+            </div>
+            <div class="document-dates">
+              <strong>Date:</strong> {d.transaction_date}
+            </div>
+          </td>
+        </tr>
+      </table>
     </div>
 
     <!-- ============================================
-         CUSTOMER, PREPARED BY & DETAILS - 3-Column Grid
+         CUSTOMER, PREPARED BY & DETAILS - 3-Column Table
          ============================================ -->
-    <div class="info-grid">
-      <!-- BILL TO (50%) -->
-      <div class="info-card">
-        <div class="info-label">Bill To</div>
-        <div class="info-name">{d.customer_name}</div>
-        <div class="info-details">{d.customer_address}</div>
-        {d.customer_email:ifNE(''):showBegin}
-        <div class="info-contact">
-          <p>{d.customer_email}</p>
-          {d.customer_phone:ifNE(''):showBegin}<p>{d.customer_phone}</p>{d.customer_phone:showEnd}
-        </div>
-        {d.customer_email:showEnd}
-        <!-- Contact Person (if specified) -->
-        {d.has_contact:ifEQ(true):showBegin}
-        <div class="info-contact">
-          <p><strong>Attn:</strong> {d.contact_name}</p>
-          {d.contact_email:ifNE(''):showBegin}<p>{d.contact_email}</p>{d.contact_email:showEnd}
-        </div>
-        {d.has_contact:showEnd}
-      </div>
-
-      <!-- PREPARED BY (25%) -->
-      <div class="info-card prepared-by">
-        <div class="info-label">Prepared By</div>
-        <div class="info-name">{d.prepared_by}</div>
-        <div class="info-details">{d.company.name}</div>
-      </div>
-
-      <!-- DETAILS (25%) -->
-      <div class="info-card details">
-        <div class="info-label">Details</div>
-        <div class="details-row">
-          <span class="label">Date:</span>
-          <span class="value">{d.transaction_date}</span>
-        </div>
-        <div class="details-row">
-          <span class="label">Valid Until:</span>
-          <span class="value">{d.valid_till}</span>
-        </div>
-        <div class="details-row">
-          <span class="label">Currency:</span>
-          <span class="value">{d.currency}</span>
-        </div>
-        <div class="details-row">
-          <span class="label">Items:</span>
-          <span class="value">{d.item_count}</span>
-        </div>
-        <div class="details-row">
-          <span class="label">Total Qty:</span>
-          <span class="value">{d.total_qty:formatN(2)}</span>
-        </div>
-        {d.lead_time_weeks:ifGT(0):showBegin}
-        <div class="details-row">
-          <span class="label">Lead Time:</span>
-          <span class="value">{d.lead_time_weeks} weeks</span>
-        </div>
-        {d.lead_time_weeks:showEnd}
-      </div>
+    <div class="info-section">
+      <table class="info-table">
+        <tr>
+          <!-- BILL TO (50%) -->
+          <td style="width: 50%;">
+            <div class="info-card">
+              <div class="info-label">Bill To</div>
+              <div class="info-name">{d.customer_name}</div>
+              <div class="info-details">{d.customer_address}</div>
+              {d.customer_email:ifNE(''):showBegin}
+              <div class="info-contact">
+                {d.customer_email}<br>
+                {d.customer_phone:ifNE(''):showBegin}{d.customer_phone}{d.customer_phone:showEnd}
+              </div>
+              {d.customer_email:showEnd}
+              {d.has_contact:ifEQ(true):showBegin}
+              <div class="info-contact">
+                <strong>Attn:</strong> {d.contact_name}<br>
+                {d.contact_email:ifNE(''):showBegin}{d.contact_email}{d.contact_email:showEnd}
+              </div>
+              {d.has_contact:showEnd}
+            </div>
+          </td>
+          <!-- PREPARED BY (25%) -->
+          <td style="width: 25%;">
+            <div class="info-card prepared-by">
+              <div class="info-label">Prepared By</div>
+              <div class="info-name">{d.prepared_by}</div>
+              <div class="info-details">{d.company.name}</div>
+            </div>
+          </td>
+          <!-- DETAILS (25%) -->
+          <td style="width: 25%;">
+            <div class="info-card details">
+              <div class="info-label">Details</div>
+              <table class="details-table">
+                <tr>
+                  <td class="label">Date:</td>
+                  <td class="value">{d.transaction_date}</td>
+                </tr>
+                <tr>
+                  <td class="label">Valid Until:</td>
+                  <td class="value">{d.valid_till}</td>
+                </tr>
+                <tr>
+                  <td class="label">Currency:</td>
+                  <td class="value">{d.currency}</td>
+                </tr>
+                <tr>
+                  <td class="label">Items:</td>
+                  <td class="value">{d.item_count}</td>
+                </tr>
+                <tr>
+                  <td class="label">Total Qty:</td>
+                  <td class="value">{d.total_qty:formatN(2)}</td>
+                </tr>
+                {d.lead_time_weeks:ifGT(0):showBegin}
+                <tr>
+                  <td class="label">Lead Time:</td>
+                  <td class="value">{d.lead_time_weeks} weeks</td>
+                </tr>
+                {d.lead_time_weeks:showEnd}
+              </table>
+            </div>
+          </td>
+        </tr>
+      </table>
     </div>
 
     <!-- ============================================
@@ -677,13 +614,13 @@
       <table class="items-table">
         <thead>
           <tr>
-            <th style="width: 40px;">#</th>
-            <th style="width: 25%;">Item</th>
+            <th style="width: 30px;">#</th>
+            <th style="width: 22%;">Item</th>
             <th>Description</th>
-            <th class="text-center" style="width: 60px;">Qty</th>
-            <th class="text-center" style="width: 50px;">UOM</th>
-            <th class="text-right" style="width: 90px;">Rate</th>
-            <th class="text-right" style="width: 100px;">Amount</th>
+            <th class="text-center" style="width: 55px;">Qty</th>
+            <th class="text-center" style="width: 45px;">UOM</th>
+            <th class="text-right" style="width: 80px;">Rate</th>
+            <th class="text-right" style="width: 90px;">Amount</th>
           </tr>
         </thead>
         <tbody>
@@ -697,18 +634,15 @@
             </td>
             <td>
               <div>{d.items[i].description}</div>
-              <!-- Dimensions (if any) -->
               {d.items[i].dimension_1:ifGT(0):showBegin}
               <div class="item-dimensions">
                 Dim: {d.items[i].dimension_1:formatN(2)} x {d.items[i].dimension_2:formatN(2)}
-                {d.items[i].wall_thickness:ifGT(0):show('| Wall: ')}{d.items[i].wall_thickness:ifGT(0):formatN(2)}
+                {d.items[i].wall_thickness:ifGT(0):show(' | Wall: ')}{d.items[i].wall_thickness:ifGT(0):formatN(2)}
               </div>
               {d.items[i].dimension_1:showEnd}
-              <!-- Notes (if any) -->
               {d.items[i].has_notes:ifEQ(true):showBegin}
               <div class="item-notes">{d.items[i].notes}</div>
               {d.items[i].has_notes:showEnd}
-              <!-- Lead time (if any) -->
               {d.items[i].has_lead_time:ifEQ(true):showBegin}
               <div class="item-lead-time">Lead time: {d.items[i].lead_time} {d.items[i].lead_time_unit}</div>
               {d.items[i].has_lead_time:showEnd}
@@ -726,50 +660,51 @@
     <!-- ============================================
          TOTALS SECTION + VALIDITY NOTICE
          ============================================ -->
-    <div class="totals-validity-section">
-      <!-- Validity Notice (left side) -->
-      <div class="validity-notice">
-        <span class="validity-icon">⚠️</span>
-        <strong>Valid until {d.valid_till}</strong> ({d.days_valid} days from issue)<br>
-        Prices and availability subject to change after this date.
-      </div>
-
-      <!-- Totals Box (right side) -->
-      <div class="totals-box">
-        <div class="totals-row">
-          <span class="totals-label">Subtotal</span>
-          <span class="totals-value">{d.subtotal_formatted}</span>
-        </div>
-
-        <!-- Freight (conditional) -->
-        {d.has_freight:ifEQ(true):showBegin}
-        <div class="totals-row freight">
-          <span class="totals-label">Freight</span>
-          <span class="totals-value">+ {d.freight_total_formatted}</span>
-        </div>
-        {d.has_freight:showEnd}
-
-        <!-- Discount (conditional) -->
-        {d.has_discount:ifEQ(true):showBegin}
-        <div class="totals-row discount">
-          <span class="totals-label">Discount</span>
-          <span class="totals-value">- {d.discount_formatted}</span>
-        </div>
-        {d.has_discount:showEnd}
-
-        <!-- Tax (conditional) -->
-        {d.has_tax:ifEQ(true):showBegin}
-        <div class="totals-row">
-          <span class="totals-label">Tax</span>
-          <span class="totals-value">{d.tax_total_formatted}</span>
-        </div>
-        {d.has_tax:showEnd}
-
-        <div class="totals-row grand-total">
-          <span class="totals-label">Total ({d.currency})</span>
-          <span class="totals-value">{d.grand_total_formatted}</span>
-        </div>
-      </div>
+    <div class="totals-section">
+      <table class="totals-outer-table">
+        <tr>
+          <!-- Validity Notice (left side) -->
+          <td style="padding-right: 20px;">
+            <div class="validity-notice">
+              <strong>Valid until {d.valid_till}</strong> ({d.days_valid} days from issue)<br>
+              Prices and availability subject to change after this date.
+            </div>
+          </td>
+          <!-- Totals Box (right side) -->
+          <td style="width: 240px;">
+            <div class="totals-box">
+              <table class="totals-table">
+                <tr>
+                  <td class="totals-label">Subtotal</td>
+                  <td class="totals-value">{d.subtotal_formatted}</td>
+                </tr>
+                {d.has_freight:ifEQ(true):showBegin}
+                <tr class="freight">
+                  <td class="totals-label">Freight</td>
+                  <td class="totals-value">+ {d.freight_total_formatted}</td>
+                </tr>
+                {d.has_freight:showEnd}
+                {d.has_discount:ifEQ(true):showBegin}
+                <tr class="discount">
+                  <td class="totals-label">Discount</td>
+                  <td class="totals-value">- {d.discount_formatted}</td>
+                </tr>
+                {d.has_discount:showEnd}
+                {d.has_tax:ifEQ(true):showBegin}
+                <tr>
+                  <td class="totals-label">Tax</td>
+                  <td class="totals-value">{d.tax_total_formatted}</td>
+                </tr>
+                {d.has_tax:showEnd}
+                <tr class="grand-total">
+                  <td class="totals-label">Total ({d.currency})</td>
+                  <td class="totals-value">{d.grand_total_formatted}</td>
+                </tr>
+              </table>
+            </div>
+          </td>
+        </tr>
+      </table>
     </div>
 
     <!-- ============================================
@@ -796,27 +731,25 @@
          SIGNATURE SECTION
          ============================================ -->
     <div class="signature-section">
-      <div class="signature-box">
-        <div class="signature-line"></div>
-        <div class="signature-label">Customer Acceptance</div>
-      </div>
-      <div class="signature-box">
-        <div class="signature-line"></div>
-        <div class="signature-label">Date</div>
-      </div>
+      <table class="signature-table">
+        <tr>
+          <td>
+            <div class="signature-line"></div>
+            <div class="signature-label">Customer Acceptance</div>
+          </td>
+          <td>
+            <div class="signature-line"></div>
+            <div class="signature-label">Date</div>
+          </td>
+        </tr>
+      </table>
     </div>
 
     <!-- ============================================
-         FOOTER - Compact Single Line
+         FOOTER
          ============================================ -->
     <div class="footer">
-      <div class="footer-contact">
-        <strong>{d.company.name}</strong>
-        <span>|</span>
-        {d.company.phone}
-        <span>|</span>
-        {d.company.email}
-      </div>
+      <strong>{d.company.name}</strong> | {d.company.phone} | {d.company.email}
       <div class="footer-tagline">Thank you for the opportunity to quote.</div>
     </div>
   </div>
