@@ -159,6 +159,16 @@ Set in Dokploy UI:
 CARBONE_STUDIO_ENABLED=false
 ```
 
+### Authentication Architecture
+
+**Important:** Carbone authentication (`CARBONE_EE_AUTHENTICATION`) is **disabled** by design:
+
+1. **Backend integration** - ERPNext's `carbone_client.py` makes unauthenticated HTTP requests to render documents. The Carbone service is on the internal `dokploy-network`, not publicly exposed.
+
+2. **Studio access** - When `CARBONE_STUDIO_ENABLED=true`, the Studio UI is accessible. Access control should be handled at the Traefik/proxy layer (e.g., IP allowlist, BasicAuth middleware), not Carbone's built-in JWT auth.
+
+3. **Why not JWT?** - Carbone's JWT authentication requires ES512 private/public key pairs and token generation. Adding this to the ERPNext backend would require significant changes. Since Carbone runs on an internal network, the simpler approach is proxy-level access control.
+
 ### Finding Container Name
 
 After Dokploy deployment:

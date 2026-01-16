@@ -24,12 +24,15 @@ services:
       # Set CARBONE_STUDIO_ENABLED=true in Dokploy env vars for template editing
       - CARBONE_EE_STUDIO=${CARBONE_STUDIO_ENABLED:-false}
 
-      # AUTHENTICATION: Required when Studio is enabled
-      # Protects Studio with HTTP Basic Auth
-      - CARBONE_EE_AUTHENTICATION=${CARBONE_STUDIO_ENABLED:-false}
+      # AUTHENTICATION: Disabled to allow internal backend calls without JWT
+      # Backend (carbone_client.py) makes unauthenticated HTTP requests on internal network
+      # Studio access is controlled by Traefik middleware or Dokploy proxy, not Carbone auth
+      # WARNING: Only safe because Carbone is on internal dokploy-network, not publicly exposed
+      - CARBONE_EE_AUTHENTICATION=false
 
       # Studio credentials (format: username:password)
-      # Set via CARBONE_STUDIO_USER env var in Dokploy
+      # These are used when CARBONE_EE_AUTHENTICATION=true (currently disabled)
+      # For production Studio access, use Traefik BasicAuth middleware instead
       - CARBONE_EE_STUDIOUSER=${CARBONE_STUDIO_USER:-admin:changeme}
 
       # Enterprise license (optional - enables advanced features)
