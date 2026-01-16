@@ -7,12 +7,13 @@ Standalone Carbone.io service for PDF/document generation in Pacific Bending ERP
 **Architecture:**
 - Docker image: `carbone/carbone-ee:full-5.1.1-fonts`
 - Port: 4000 (internal), https://pb-templates.erp.observer (external)
-- Templates: Git-tracked in `./templates/`
+- Templates: Stored in Frappe (backup) + Carbone service (active)
 
 **Related Components:**
-- Backend mapper code: `pacific-bending-backend/pacific_bending_app/carbone/`
-- Backend API: `pacific-bending-backend/pacific_bending_app/api/carbone_api.py`
-- This repo: Docker service + templates only
+- Backend DocType: `pacific-bending-backend/.../doctype/carbone_template/` - Template metadata
+- Backend API: `pacific-bending-backend/.../api/carbone_api.py` - 12 endpoints
+- Backend mappers: `pacific-bending-backend/.../carbone/` - Data transformation
+- This repo: Docker service only (templates uploaded via API)
 
 ## Common Commands
 
@@ -33,38 +34,67 @@ CARBONE_STUDIO_ENABLED=true docker compose up -d
 open http://localhost:4000/studio
 ```
 
-## Template Management
+## Template Management (Jan 2026 Update)
 
-### Directory Structure
+### Storage Architecture
 
-Templates are organized by ERPNext DocType:
+Templates are now stored in **two locations** for reliability:
 
+1. **Frappe File System** (backup): Template files attached to `Carbone Template` DocType
+2. **Carbone Service** (active): Auto-uploaded when template is created/updated
+
+**Template Naming:** `TPL-{doc_type_code}-####` (e.g., TPL-QTN-0001, TPL-INV-0002)
+
+### Adding New Templates
+
+**Via Admin UI (Recommended):**
+
+1. Go to ERPNext → Carbone Template → New
+2. Fill in: template_name, doc_type, file_extension
+3. Upload template file (Attach field)
+4. Save → Auto-syncs to Carbone service
+
+**Via API:**
+
+```python
+# POST /api/method/pacific_bending_app.api.carbone_api.upload_template
+{
+  "doc_type": "Quotation",
+  "template_name": "Detailed",
+  "file_data": "<base64>",
+  "file_extension": "docx",
+  "is_default": false
+}
 ```
-templates/
-├── quotation/        # Customer quotations
-├── work_order/       # Manufacturing work orders
-├── job_card/         # Shop floor job cards
-├── sales_invoice/    # Customer invoices
-└── delivery_note/    # Shipping documents
-```
 
-### Adding/Editing Templates
-
-**Using Carbone Studio (Recommended):**
+### Editing Templates with Carbone Studio
 
 1. Enable Studio:
    ```bash
    CARBONE_STUDIO_ENABLED=true docker compose up -d
    ```
 2. Access Studio: http://localhost:4000/studio (or https://pb-templates.erp.observer/studio)
-3. Upload a base DOCX/ODT document
-4. Insert variables using the drag-drop interface
-5. Export template and save to appropriate directory
-6. Commit to Git
-7. Disable Studio:
+3. Upload existing template or create new
+4. Edit variables using drag-drop interface
+5. Export DOCX → Upload via Admin UI or API
+6. Disable Studio when done:
    ```bash
    CARBONE_STUDIO_ENABLED=false docker compose up -d
    ```
+
+### Backup/Restore
+
+**Export all templates:**
+```python
+# POST /api/method/pacific_bending_app.api.carbone_api.backup_templates
+# Creates: templates.json manifest + template files by DocType
+```
+
+**Import from backup:**
+```python
+# POST /api/method/pacific_bending_app.api.carbone_api.import_templates
+{ "input_dir": "/path/to/backup", "overwrite": false }
+```
 
 **Template Variable Syntax:**
 
@@ -91,15 +121,24 @@ The backend communicates via HTTP to this service:
 }
 ```
 
-**Communication Flow:**
+**Rendering Flow (Updated Jan 2026):**
 ```
-Frontend Request
+Frontend Request (template_id or template_name)
     → Backend API (carbone_api.py)
-    → MapperRegistry → DocType Mapper
-    → CarboneClient.render()
-    → HTTP POST to this service
+    → _get_template() → Carbone Template DocType
+    → template_doc.get_carbone_template_id() → Auto-sync if needed
+    → MapperRegistry → DocType Mapper → Transform data
+    → CarboneClient.render_with_template_id()
+    → HTTP POST /render/:template_id
     → Return PDF/DOCX bytes
 ```
+
+**Key Carbone Service Endpoints:**
+- `POST /render/:template_id` - Render document with JSON data
+- `POST /template` - Upload template (returns SHA256 ID)
+- `GET /template/:template_id` - Download template
+- `DELETE /template/:template_id` - Delete template
+- `GET /status` - Health check
 
 ## Dokploy Deployment
 
