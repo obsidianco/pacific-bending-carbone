@@ -41,13 +41,27 @@
     }
 
     /* ============================================
-       Page Layout
+       Page Layout (US Letter: 8.5" × 11")
        ============================================ */
+    @page {
+      size: letter;
+      margin: 0;
+    }
+
     .page {
-      max-width: 210mm;
+      width: 8.5in;
+      min-height: 11in;
       margin: 0 auto;
-      padding: 15mm 20mm;
+      padding: 0.5in 0.6in;
       background: #ffffff;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Ensure all content appears above watermark */
+    .page > *:not(.watermark) {
+      position: relative;
+      z-index: 1;
     }
 
     /* ============================================
@@ -57,8 +71,8 @@
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      margin-bottom: 25px;
-      padding-bottom: 20px;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
       border-bottom: 3px solid #2c3e50;
     }
 
@@ -118,19 +132,21 @@
       color: #2c3e50;
     }
 
-    /* Draft Watermark */
+    /* Draft Watermark - Subtle diagonal background text */
     .watermark {
-      position: fixed;
+      position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%) rotate(-45deg);
-      font-size: 120pt;
-      font-weight: bold;
-      color: rgba(231, 76, 60, 0.08);
+      font-size: 90pt;
+      font-weight: 700;
+      color: rgba(180, 180, 180, 0.18);
       text-transform: uppercase;
+      letter-spacing: 15px;
+      white-space: nowrap;
       pointer-events: none;
-      z-index: -1;
-      letter-spacing: 20px;
+      user-select: none;
+      z-index: 0;
     }
 
     /* ============================================
@@ -139,13 +155,13 @@
     .parties {
       display: flex;
       justify-content: space-between;
-      margin-bottom: 30px;
-      gap: 40px;
+      margin-bottom: 18px;
+      gap: 25px;
     }
 
     .party-box {
       flex: 1;
-      padding: 15px 20px;
+      padding: 12px 16px;
       background: #f8f9fa;
       border-radius: 6px;
       border-left: 4px solid #3498db;
@@ -203,9 +219,9 @@
       justify-content: space-between;
       background: #2c3e50;
       color: #ffffff;
-      padding: 12px 20px;
+      padding: 10px 18px;
       border-radius: 6px;
-      margin-bottom: 25px;
+      margin-bottom: 16px;
       font-size: 9pt;
     }
 
@@ -230,15 +246,16 @@
        Line Items Table
        ============================================ */
     .items-section {
-      margin-bottom: 25px;
+      margin-bottom: 16px;
+      page-break-inside: avoid;
     }
 
     .section-title {
       font-size: 11pt;
       font-weight: 600;
       color: #2c3e50;
-      margin-bottom: 12px;
-      padding-bottom: 5px;
+      margin-bottom: 8px;
+      padding-bottom: 4px;
       border-bottom: 2px solid #ecf0f1;
     }
 
@@ -254,7 +271,7 @@
     }
 
     .items-table th {
-      padding: 10px 12px;
+      padding: 8px 10px;
       text-align: left;
       font-weight: 600;
       text-transform: uppercase;
@@ -285,7 +302,7 @@
     }
 
     .items-table td {
-      padding: 10px 12px;
+      padding: 8px 10px;
       vertical-align: top;
     }
 
@@ -331,7 +348,8 @@
     .totals-section {
       display: flex;
       justify-content: flex-end;
-      margin-bottom: 30px;
+      margin-bottom: 20px;
+      page-break-inside: avoid;
     }
 
     .totals-box {
@@ -344,7 +362,7 @@
     .totals-row {
       display: flex;
       justify-content: space-between;
-      padding: 10px 15px;
+      padding: 8px 12px;
       border-bottom: 1px solid #e0e0e0;
       font-size: 9.5pt;
     }
@@ -366,7 +384,7 @@
       color: #ffffff;
       font-size: 12pt;
       font-weight: 600;
-      padding: 12px 15px;
+      padding: 10px 12px;
     }
 
     .totals-label {
@@ -390,27 +408,27 @@
        Terms & Notes Section
        ============================================ */
     .terms-section {
-      margin-bottom: 25px;
+      margin-bottom: 16px;
       page-break-inside: avoid;
     }
 
     .terms-content {
       background: #fafafa;
-      padding: 15px 20px;
+      padding: 10px 14px;
       border-radius: 6px;
       border: 1px solid #e0e0e0;
       font-size: 9pt;
       color: #5d6d7e;
       white-space: pre-line;
-      line-height: 1.6;
+      line-height: 1.5;
     }
 
     /* ============================================
        Footer Section
        ============================================ */
     .footer {
-      margin-top: 40px;
-      padding-top: 20px;
+      margin-top: 25px;
+      padding-top: 12px;
       border-top: 2px solid #ecf0f1;
       text-align: center;
       font-size: 8pt;
@@ -418,24 +436,25 @@
     }
 
     .footer p {
-      margin: 3px 0;
+      margin: 2px 0;
     }
 
     .validity-notice {
       background: #fff3cd;
       color: #856404;
-      padding: 10px 15px;
+      padding: 8px 12px;
       border-radius: 6px;
       text-align: center;
       font-size: 9pt;
-      margin-bottom: 20px;
+      margin-bottom: 16px;
     }
 
     .signature-section {
       display: flex;
       justify-content: space-between;
-      margin-top: 50px;
-      gap: 60px;
+      margin-top: 30px;
+      gap: 50px;
+      page-break-inside: avoid;
     }
 
     .signature-box {
@@ -445,8 +464,8 @@
 
     .signature-line {
       border-bottom: 1px solid #2c3e50;
-      height: 50px;
-      margin-bottom: 8px;
+      height: 40px;
+      margin-bottom: 6px;
     }
 
     .signature-label {
@@ -466,12 +485,39 @@
       }
 
       .page {
-        padding: 10mm 15mm;
+        width: 100%;
+        min-height: auto;
+        padding: 0;
+      }
+
+      .watermark {
+        position: fixed;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
       }
 
       .items-table thead {
         background: #34495e !important;
         -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      .project-info {
+        background: #2c3e50 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      .totals-row.grand-total {
+        background: #2c3e50 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      .validity-notice {
+        background: #fff3cd !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
       }
     }
 
@@ -499,10 +545,9 @@
   </style>
 </head>
 <body>
-  <!-- Draft Watermark (only shows if status is Draft) -->
-  {d.watermark:ifNE(''):showBegin}<div class="watermark">{d.watermark}</div>{d.watermark:showEnd}
-
   <div class="page">
+    <!-- Draft Watermark (only shows if status is Draft) -->
+    {d.watermark:ifNE(''):showBegin}<div class="watermark">{d.watermark}</div>{d.watermark:showEnd}
     <!-- ============================================
          HEADER: Company Info & Document Info
          ============================================ -->
